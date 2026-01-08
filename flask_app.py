@@ -31,6 +31,7 @@ def download_media():
 
     # Common Options
     ydl_opts = {
+           'cookiefile': 'cookies.txt',  # <--- YEH LINE ADD KARNI HAI
         'outtmpl': os.path.join(DOWNLOAD_FOLDER, '%(title)s.%(ext)s'),
         'restrictfilenames': True,  # Special characters hatane ke liye
     }
