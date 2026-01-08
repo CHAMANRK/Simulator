@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Python Downloader</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f4f4; text-align: center; padding: 20px; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h1 { color: #e62117; }
+        input, select, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; background: #e62117; color: white; border: none; font-size: 16px; border-radius: 5px; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #cc1f16; }
+        .hidden { display: none; }
+        .note { font-size: 12px; color: #666; margin-top: 10px; }
+    </style>
+    <script>
+        function updateForm() {
+            var mode = document.getElementById("mode").value;
+            var urlInput = document.getElementById("url_input");
+            var batchInput = document.getElementById("batch_input");
+            var qualityInput = document.getElementById("quality_div");
+
+            // Batch mode me URL box chupao, Text area dikhao
+            if (mode === "batch") {
+                urlInput.style.display = "none";
+                batchInput.style.display = "block";
+                qualityInput.style.display = "none";
+            } 
+            // Single Video me Quality dikhao
+            else if (mode === "single_video") {
+                urlInput.style.display = "block";
+                batchInput.style.display = "none";
+                qualityInput.style.display = "block";
+            }
+            // Baaki sab me sirf URL dikhao
+            else {
+                urlInput.style.display = "block";
+                batchInput.style.display = "none";
+                qualityInput.style.display = "none";
+            }
+        }
+    </script>
+</head>
+<body>
+
+<div class="container">
+    <h1>🚀 RIZWAN DOWNLOADER</h1>
+    <p>Download Videos, Audio, Playlists & Batch Files</p>
+
+    <form action="/download" method="post">
+        
+        <label><b>Select Option:</b></label>
+        <select name="mode" id="mode" onchange="updateForm()">
+            <option value="single_video">Single Video (MP4)</option>
+            <option value="single_audio">Single Audio (MP3)</option>
+            <option value="playlist_video">Playlist Download (ZIP - MP4)</option>
+            <option value="playlist_audio">Playlist Download (ZIP - MP3)</option>
+            <option value="batch">Batch Download (Multiple Links)</option>
+        </select>
+
+        <div id="url_input">
+            <input type="text" name="url" placeholder="Paste Video or Playlist Link Here...">
+        </div>
+
+        <div id="batch_input" class="hidden">
+            <textarea name="batch_urls" rows="5" placeholder="Paste multiple links here (One per line)"></textarea>
+        </div>
+
+        <div id="quality_div">
+            <label>Select Quality:</label>
+            <select name="quality">
+                <option value="best">Highest Available (Recommended)</option>
+                <option value="1080">1080p</option>
+                <option value="720">720p</option>
+                <option value="480">480p</option>
+                <option value="360">360p</option>
+            </select>
+        </div>
+
+        <button type="submit" onclick="alert('Download start ho raha hai. Please wait... Badi files me time lag sakta hai!')">Start Download</button>
+        
+        <p class="note">Note: Playlist download hone me time lag sakta hai. Refresh na karein.</p>
+    </form>
+</div>
+
+</body>
+</html>
