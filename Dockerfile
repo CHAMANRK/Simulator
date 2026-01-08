@@ -1,7 +1,7 @@
 # Python ka base version
 FROM python:3.9-slim
 
-# FFmpeg install karne ka magic command
+# FFmpeg install karna
 RUN apt-get update && \
     apt-get install -y ffmpeg && \
     rm -rf /var/lib/apt/lists/*
@@ -9,12 +9,12 @@ RUN apt-get update && \
 # Kaam karne ki jagah
 WORKDIR /app
 
-# Requirements file copy karo aur install karo
+# Requirements install karna
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Baaki saara code copy karo
+# Baaki code copy karna
 COPY . .
 
-# App run karo (Gunicorn ke saath)
-CMD ["gunicorn", "-b", "0.0.0.0:10000", "flask_app:app"]
+# TIMEOUT BADHAYA (Yahan change kiya hai: --timeout 600)
+CMD ["gunicorn", "--timeout", "600", "-b", "0.0.0.0:10000", "flask_app:app"]
