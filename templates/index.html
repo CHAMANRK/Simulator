@@ -3,16 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate Python Downloader</title>
+    <title>Chaman Downloader | Professional Tool</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f4f4; text-align: center; padding: 20px; }
-        .container { max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        h1 { color: #e62117; }
-        input, select, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; background: #e62117; color: white; border: none; font-size: 16px; border-radius: 5px; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #cc1f16; }
+        :root {
+            --primary-color: #4e54c8;
+            --secondary-color: #8f94fb;
+            --bg-color: #1e1e2f;
+            --card-bg: #27293d;
+            --text-color: #ffffff;
+            --input-bg: #1d1e26;
+            --border-color: #2b3553;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1e1e2f 0%, #2a2a40 100%);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        h1 {
+            margin-bottom: 5px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            background: linear-gradient(to right, #ffffff, #b0b0b0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #a0a0a0;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #d1d1d1;
+            font-weight: 500;
+        }
+
+        select, input, textarea {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 20px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: white;
+            font-family: inherit;
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 10px rgba(143, 148, 251, 0.2);
+        }
+
+        /* Hide elements dynamically */
         .hidden { display: none; }
-        .note { font-size: 12px; color: #666; margin-top: 10px; }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(78, 84, 200, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .alert-box {
+            background: rgba(255, 165, 0, 0.1);
+            border-left: 4px solid orange;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 25px;
+            text-align: left;
+        }
+
+        .alert-box p {
+            margin: 0;
+            font-size: 12px;
+            color: #ffcc80;
+            line-height: 1.6;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #555;
+        }
+
     </style>
     <script>
         function updateForm() {
@@ -21,19 +139,19 @@
             var batchInput = document.getElementById("batch_input");
             var qualityInput = document.getElementById("quality_div");
 
-            // Batch mode me URL box chupao, Text area dikhao
+            // Batch mode logic
             if (mode === "batch") {
                 urlInput.style.display = "none";
                 batchInput.style.display = "block";
-                qualityInput.style.display = "none";
+                qualityInput.style.display = "none"; // Batch me quality auto best rakh sakte hain
             } 
-            // Single Video me Quality dikhao
+            // Single Video logic
             else if (mode === "single_video") {
                 urlInput.style.display = "block";
                 batchInput.style.display = "none";
                 qualityInput.style.display = "block";
             }
-            // Baaki sab me sirf URL dikhao
+            // Audio logic
             else {
                 urlInput.style.display = "block";
                 batchInput.style.display = "none";
@@ -45,42 +163,49 @@
 <body>
 
 <div class="container">
-    <h1>🚀 RIZWAN DOWNLOADER</h1>
-    <p>Download Videos, Audio, Playlists & Batch Files</p>
+    <h1>⚡ CHAMAN DOWNLOADER</h1>
+    <p class="subtitle">Premium Tool for Social Media Downloads</p>
 
     <form action="/download" method="post">
         
-        <label><b>Select Option:</b></label>
+        <label for="mode">Select Download Type</label>
         <select name="mode" id="mode" onchange="updateForm()">
-            <option value="single_video">Single Video (MP4)</option>
-            <option value="single_audio">Single Audio (MP3)</option>
-            <option value="playlist_video">Playlist Download (ZIP - MP4)</option>
-            <option value="playlist_audio">Playlist Download (ZIP - MP3)</option>
+            <option value="single_video">Video (MP4)</option>
+            <option value="single_audio">Audio Only (MP3)</option>
             <option value="batch">Batch Download (Multiple Links)</option>
         </select>
 
         <div id="url_input">
-            <input type="text" name="url" placeholder="Paste Video or Playlist Link Here...">
+            <label>Paste Link</label>
+            <input type="text" name="url" placeholder="https://instagram.com/reel/...">
         </div>
 
         <div id="batch_input" class="hidden">
-            <textarea name="batch_urls" rows="5" placeholder="Paste multiple links here (One per line)"></textarea>
+            <label>Batch Links (One per line)</label>
+            <textarea name="batch_urls" rows="5" placeholder="Paste multiple links here..."></textarea>
         </div>
 
         <div id="quality_div">
-            <label>Select Quality:</label>
+            <label>Select Quality</label>
             <select name="quality">
-                <option value="best">Highest Available (Recommended)</option>
-                <option value="1080">1080p</option>
-                <option value="720">720p</option>
-                <option value="480">480p</option>
-                <option value="360">360p</option>
+                <option value="best" selected>✨ Highest Available (Recommended)</option>
+                <option value="1080">Full HD (1080p)</option>
+                <option value="720">HD (720p)</option>
+                <option value="480">Standard (480p)</option>
             </select>
         </div>
 
-        <button type="submit" onclick="alert('Download start ho raha hai. Please wait... Badi files me time lag sakta hai!')">Start Download</button>
+        <button type="submit" onclick="alert('Download initialized! Please wait while we process the file.')">Start Download</button>
         
-        <p class="note">Note: Playlist download hone me time lag sakta hai. Refresh na karein.</p>
+        <div class="alert-box">
+            <p><strong>⚠️ Important Note:</strong></p>
+            <p>1. Yeh tool Instagram, Facebook, Twitter, etc. support karta hai. <strong>YouTube supported nahi hai.</strong></p>
+            <p>2. Error se bachne ke liye hamesha <strong>"Highest Available"</strong> quality hi select karein.</p>
+        </div>
+
+        <div class="footer">
+            &copy; 2024 Chaman Downloader. All rights reserved.
+        </div>
     </form>
 </div>
 
