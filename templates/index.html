@@ -3,389 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chaman Downloader | Next-Gen Tool</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>Chaman Downloader | Pro 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        :root {
-            --primary: #00f2fe;
-            --secondary: #4facfe;
-            --bg-dark: #0f172a;
-            --card-glass: rgba(30, 41, 59, 0.7);
-            --text-glow: 0 0 10px rgba(79, 172, 254, 0.5);
-            --border: rgba(255, 255, 255, 0.1);
-        }
-
-        body {
-            font-family: 'Outfit', sans-serif;
-            background-color: var(--bg-dark);
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(79, 172, 254, 0.1) 0%, transparent 20%),
-                radial-gradient(circle at 90% 80%, rgba(0, 242, 254, 0.1) 0%, transparent 20%);
-            color: white;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 0;
-            padding: 20px;
-        }
-
-        /* --- HEADER --- */
-        .logo-area {
-            text-align: center;
-            margin-top: 40px;
-            margin-bottom: 30px;
-        }
+        :root { --primary: #00f2fe; --secondary: #4facfe; --bg: #0f172a; --glass: rgba(30, 41, 59, 0.7); }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: white; margin: 0; padding: 20px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
         
-        h1 {
-            font-size: 3rem;
-            margin: 0;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: var(--text-glow);
-            letter-spacing: -1px;
-        }
-
-        .badge {
-            background: rgba(255, 69, 0, 0.2);
-            color: #ff4500;
-            border: 1px solid rgba(255, 69, 0, 0.5);
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            display: inline-block;
-            margin-top: 10px;
-        }
-
-        /* --- MAIN CARD --- */
-        .container {
-            width: 100%;
-            max-width: 600px;
-            background: var(--card-glass);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 30px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-            transition: transform 0.3s;
-        }
-
-        /* --- INPUT AREA --- */
-        .input-group {
-            position: relative;
-            margin-bottom: 20px;
-        }
-
-        input {
-            width: 100%;
-            padding: 18px 50px 18px 20px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            color: white;
-            font-size: 1rem;
-            font-family: inherit;
-            box-sizing: border-box;
-            transition: 0.3s;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--secondary);
-            box-shadow: 0 0 15px rgba(79, 172, 254, 0.3);
-        }
-
-        .paste-btn {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: #aaa;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .paste-btn:hover { color: white; }
-
-        button.main-btn {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, var(--secondary), var(--primary));
-            border: none;
-            border-radius: 12px;
-            color: #0f172a;
-            font-weight: 800;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        button.main-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(79, 172, 254, 0.4);
-        }
-
-        /* --- RESULT SECTION --- */
-        #result-area {
-            margin-top: 30px;
-            display: none;
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .video-meta {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            align-items: center;
-        }
-
-        .thumb-img {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-        }
-
-        .video-info h3 {
-            margin: 0 0 5px 0;
-            font-size: 1rem;
-            line-height: 1.4;
-            max-height: 40px;
-            overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-        }
-
-        .video-info p {
-            margin: 0;
-            font-size: 0.85rem;
-            color: #aaa;
-        }
-
-        /* --- DOWNLOAD LIST --- */
-        .download-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 12px 15px;
-            margin-bottom: 10px;
-            border-radius: 10px;
-            border: 1px solid transparent;
-            transition: 0.2s;
-        }
-
-        .download-item:hover {
-            border-color: rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .quality-tag {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .container { width: 100%; max-width: 500px; margin-top: 40px; }
         
-        .res-badge {
-            background: rgba(0,0,0,0.4);
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            color: var(--primary);
-            font-weight: 600;
-        }
+        .logo { font-size: 2.5rem; font-weight: 800; text-align: center; margin-bottom: 5px; background: linear-gradient(to right, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { text-align: center; color: #64748b; font-size: 0.9rem; margin-bottom: 30px; }
 
-        .dl-btn {
-            background: var(--bg-dark);
-            color: white;
-            text-decoration: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            border: 1px solid var(--secondary);
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
+        .card { background: var(--glass); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
 
-        .dl-btn:hover {
-            background: var(--secondary);
-            color: var(--bg-dark);
-        }
+        .input-box { position: relative; margin-bottom: 15px; }
+        input { width: 100%; padding: 16px; padding-right: 50px; background: rgba(0,0,0,0.3); border: 1px solid #334155; border-radius: 12px; color: white; font-size: 1rem; box-sizing: border-box; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--secondary); box-shadow: 0 0 15px rgba(79, 172, 254, 0.2); }
+        
+        .paste-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #94a3b8; cursor: pointer; }
 
-        /* --- LOADER --- */
-        .loader {
-            display: none;
-            text-align: center;
-            margin-top: 20px;
-        }
-        .spinner {
-            width: 30px;
-            height: 30px;
-            border: 3px solid rgba(255,255,255,0.1);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
+        button.main-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--secondary), var(--primary)); border: none; border-radius: 12px; color: #0f172a; font-weight: 700; font-size: 1.1rem; cursor: pointer; transition: 0.3s; }
+        button.main-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(79, 172, 254, 0.4); }
+        button:disabled { opacity: 0.7; cursor: not-allowed; }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
+        /* Results */
+        #result-area { display: none; margin-top: 25px; animation: slideUp 0.4s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- ALERT --- */
-        .alert {
-            background: rgba(220, 38, 38, 0.2);
-            color: #fca5a5;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            display: none;
-            font-size: 0.9rem;
-            border-left: 3px solid #ef4444;
-        }
+        .meta { display: flex; gap: 15px; align-items: center; margin-bottom: 20px; }
+        .thumb { width: 90px; height: 90px; border-radius: 12px; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); }
+        .info h3 { margin: 0 0 5px 0; font-size: 1rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .info p { margin: 0; font-size: 0.85rem; color: #94a3b8; }
 
+        .dl-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 12px; margin-bottom: 10px; border-radius: 10px; border: 1px solid transparent; transition: 0.2s; }
+        .dl-item:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
+        
+        .quality-badge { font-weight: 700; color: var(--primary); font-size: 1.1rem; }
+        .size-badge { font-size: 0.8rem; color: #94a3b8; display: block; }
+        
+        .dl-btn-small { text-decoration: none; background: var(--bg); color: white; padding: 8px 16px; border-radius: 8px; font-size: 0.9rem; border: 1px solid var(--secondary); transition: 0.2s; }
+        .dl-btn-small:hover { background: var(--secondary); color: var(--bg); }
+
+        .error-box { background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5; padding: 15px; border-radius: 12px; margin-top: 20px; display: none; font-size: 0.95rem; text-align: center; }
     </style>
 </head>
 <body>
 
-    <div class="logo-area">
-        <h1>CHAMAN DL</h1>
-        <div class="badge"><i class="fas fa-exclamation-triangle"></i> NO YOUTUBE SUPPORT</div>
-    </div>
-
     <div class="container">
+        <div class="logo">CHAMAN DL</div>
+        <p class="subtitle">Premium Social Media Downloader</p>
+
+        <div class="card">
+            <form id="dlForm" onsubmit="handleFetch(event)">
+                <div class="input-box">
+                    <input type="url" id="urlInput" placeholder="Paste Instagram, Facebook link..." required autocomplete="off">
+                    <i class="fas fa-paste paste-icon" onclick="pasteLink()"></i>
+                </div>
+                <button type="submit" class="main-btn" id="subBtn">Fetch Video ⚡</button>
+            </form>
+
+            <div id="errorBox" class="error-box"></div>
+
+            <div id="result-area">
+                <div class="meta">
+                    <img id="thumb" class="thumb" src="">
+                    <div class="info">
+                        <h3 id="vidTitle">Video Title</h3>
+                        <p id="vidDur">Duration: 0:00</p>
+                    </div>
+                </div>
+                <div id="linksList"></div>
+            </div>
+        </div>
         
-        <form id="dlForm" onsubmit="handleFetch(event)">
-            <div class="input-group">
-                <input type="url" id="urlInput" placeholder="Paste Instagram, Facebook, Twitter link here..." required autocomplete="off">
-                <button type="button" class="paste-btn" onclick="pasteClipboard()">
-                    <i class="fas fa-paste"></i>
-                </button>
-            </div>
-            
-            <button type="submit" class="main-btn" id="submitBtn">
-                Fetch Links <i class="fas fa-bolt"></i>
-            </button>
-        </form>
-
-        <div class="loader" id="loader">
-            <div class="spinner"></div>
-            <p style="font-size: 0.8rem; color: #aaa; margin-top: 10px;">Processing Metadata...</p>
-        </div>
-
-        <div class="alert" id="errorBox"></div>
-
-        <div id="result-area">
-            <div class="video-meta">
-                <img id="thumb" class="thumb-img" src="" alt="Thumbnail">
-                <div class="video-info">
-                    <h3 id="vidTitle">Video Title</h3>
-                    <p id="vidDuration">0:00</p>
-                </div>
-            </div>
-
-            <div id="linksList">
-                </div>
-        </div>
-
-    </div>
-
-    <div style="margin-top: 30px; color: #555; font-size: 0.8rem;">
-        &copy; 2026 Chaman Downloader. Secure & Fast.
+        <p style="text-align:center; font-size:0.8rem; color:#475569; margin-top:30px;">
+            Server-side processed. No logs stored.
+        </p>
     </div>
 
     <script>
-        async function pasteClipboard() {
+        async function pasteLink() {
             try {
                 const text = await navigator.clipboard.readText();
                 document.getElementById('urlInput').value = text;
-            } catch (err) {
-                console.error('Failed to read clipboard', err);
-            }
+            } catch(e) { console.log(e); }
         }
 
         async function handleFetch(e) {
             e.preventDefault();
-            
-            // Reset UI
-            const url = document.getElementById('urlInput').value;
-            const btn = document.getElementById('submitBtn');
-            const loader = document.getElementById('loader');
+            const btn = document.getElementById('subBtn');
             const resultArea = document.getElementById('result-area');
             const errorBox = document.getElementById('errorBox');
             const list = document.getElementById('linksList');
+            const url = document.getElementById('urlInput').value;
 
+            // Reset UI
             resultArea.style.display = 'none';
             errorBox.style.display = 'none';
-            loader.style.display = 'block';
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...';
             btn.disabled = true;
-            btn.innerHTML = 'Fetching...';
 
             const formData = new FormData();
             formData.append('url', url);
 
             try {
-                const response = await fetch('/fetch_info', {
-                    method: 'POST',
-                    body: formData
-                });
+                const response = await fetch('/fetch_info', { method: 'POST', body: formData });
+                
+                // --- SMART JSON CHECK ---
+                // Ye check karega ki response sach me JSON hai ya HTML error page
+                const contentType = response.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    throw new Error("Server is busy or restarting. Please try again in 5 seconds.");
+                }
+
                 const data = await response.json();
 
                 if (data.status === 'error') {
                     throw new Error(data.message);
                 }
 
-                // Success - Populate Data
+                // Populate Data
                 document.getElementById('thumb').src = data.thumbnail;
                 document.getElementById('vidTitle').innerText = data.title;
-                document.getElementById('vidDuration').innerText = data.duration || 'Unknown Duration';
+                document.getElementById('vidDur').innerText = data.duration || 'N/A';
+                
+                list.innerHTML = '';
+                data.formats.forEach(f => {
+                    // Filename safe banana
+                    const safeTitle = data.title.replace(/[^a-z0-9]/gi, '_').substring(0, 30);
+                    const proxyUrl = `/proxy_download?url=${encodeURIComponent(f.url)}&filename=${safeTitle}.${f.ext}`;
 
-                list.innerHTML = ''; // Clear old list
-
-                data.formats.forEach(format => {
-                    // Create Proxy Link
-                    // encodeURIComponent zaroori hai taaki URL break na ho
-                    const proxyUrl = `/proxy_download?url=${encodeURIComponent(format.url)}&filename=${encodeURIComponent(data.title)}.${format.ext}`;
-
-                    const item = document.createElement('div');
-                    item.className = 'download-item';
-                    item.innerHTML = `
-                        <div class="quality-tag">
-                            <span class="res-badge">${format.quality}</span>
-                            <span style="font-size: 0.8rem; color: #888;">${format.ext.toUpperCase()} • ${format.size}</span>
+                    list.innerHTML += `
+                        <div class="dl-item">
+                            <div>
+                                <span class="quality-badge">${f.quality}</span>
+                                <span class="size-badge">${f.ext.toUpperCase()} • ${f.size}</span>
+                            </div>
+                            <a href="${proxyUrl}" class="dl-btn-small">
+                                Download <i class="fas fa-download"></i>
+                            </a>
                         </div>
-                        <a href="${proxyUrl}" class="dl-btn">
-                            Download <i class="fas fa-download"></i>
-                        </a>
                     `;
-                    list.appendChild(item);
                 });
 
                 resultArea.style.display = 'block';
 
             } catch (err) {
-                errorBox.innerText = err.message;
+                errorBox.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${err.message}`;
                 errorBox.style.display = 'block';
             } finally {
-                loader.style.display = 'none';
+                btn.innerHTML = 'Fetch Video ⚡';
                 btn.disabled = false;
-                btn.innerHTML = 'Fetch Links <i class="fas fa-bolt"></i>';
             }
         }
     </script>
