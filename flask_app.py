@@ -1,98 +1,121 @@
-from flask import Flask, render_template, request, send_file
+from flask import Flask, render_template, request, jsonify, Response, stream_with_context
 import yt_dlp
-import os
-import shutil
+import requests
+import urllib.parse
 
 app = Flask(__name__)
 
-# Server paths setup
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DOWNLOAD_FOLDER = os.path.join(BASE_DIR, 'downloads')
-
-def clean_folder():
-    if os.path.exists(DOWNLOAD_FOLDER):
-        shutil.rmtree(DOWNLOAD_FOLDER)
-    os.makedirs(DOWNLOAD_FOLDER)
+# --- CONFIGURATION ---
+def get_ydl_opts():
+    return {
+        'quiet': True,
+        'no_warnings': True,
+        'simulate': True,  # Download mat karo, sirf info do
+        'cookiefile': 'cookies.txt',  # Optional: Agar login required ho
+        # User Agent spoofing taaki Instagram/FB block na kare
+        'http_headers': {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        }
+    }
 
 @app.route('/')
 def home():
     return render_template('index.html')
 
-@app.route('/download', methods=['POST'])
-def download_media():
-    clean_folder()
-    
+@app.route('/fetch_info', methods=['POST'])
+def fetch_info():
     url = request.form.get('url')
-    mode = request.form.get('mode')
-    quality = request.form.get('quality', 'best')
-    batch_urls = request.form.get('batch_urls')
+    
+    # 1. YouTube Blocking Logic
+    if "youtube.com" in url or "youtu.be" in url:
+        return jsonify({'status': 'error', 'message': '🚫 YouTube downloads are restricted by policy.'})
 
-    # --- SETTINGS (Isme Cookie file sahi se lagi hai) ---
-    ydl_opts = {
-        'cookiefile': 'cookies.txt',
-        'outtmpl': os.path.join(DOWNLOAD_FOLDER, '%(title)s.%(ext)s'),
-        'restrictfilenames': True,
-    }
+    if not url:
+        return jsonify({'status': 'error', 'message': 'Please enter a valid URL.'})
 
-    # --- MODES ---
-    if mode == 'single_video':
-        quality_map = {
-            "360": "bestvideo[height<=360]+bestaudio/best[height<=360]",
-            "480": "bestvideo[height<=480]+bestaudio/best[height<=480]",
-            "720": "bestvideo[height<=720]+bestaudio/best[height<=720]",
-            "1080": "bestvideo[height<=1080]+bestaudio/best[height<=1080]",
-            "best": "bestvideo+bestaudio/best"
-        }
-        ydl_opts['format'] = quality_map.get(quality, 'bestvideo+bestaudio/best')
-        ydl_opts['merge_output_format'] = 'mp4'
-
-    elif mode == 'single_audio':
-        ydl_opts['format'] = 'bestaudio/best'
-        ydl_opts['postprocessors'] = [{'key': 'FFmpegExtractAudio', 'preferredcodec': 'mp3'}]
-
-    elif mode == 'images':
-        ydl_opts['skip_download'] = True
-        ydl_opts['writethumbnail'] = True
-        ydl_opts['outtmpl'] = os.path.join(DOWNLOAD_FOLDER, '%(title)s.%(ext)s')
-
-    elif mode in ['playlist_video', 'playlist_audio']:
-        if mode == 'playlist_audio':
-            ydl_opts['format'] = 'bestaudio/best'
-            ydl_opts['postprocessors'] = [{'key': 'FFmpegExtractAudio', 'preferredcodec': 'mp3'}]
-        else:
-            ydl_opts['format'] = 'bestvideo[height<=720]+bestaudio/best'
-            ydl_opts['merge_output_format'] = 'mp4'
-        ydl_opts['outtmpl'] = os.path.join(DOWNLOAD_FOLDER, '%(playlist_index)s-%(title)s.%(ext)s')
-
-    elif mode == 'batch':
-        url_list = [u.strip() for u in batch_urls.split('\n') if u.strip()]
-        if not url_list: return "Error: No URLs found"
-        ydl_opts['format'] = 'bestvideo[height<=720]+bestaudio/best'
-        ydl_opts['merge_output_format'] = 'mp4'
-        url = url_list
-
-    # --- DOWNLOAD EXECUTION ---
     try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            if mode == 'batch':
-                ydl.download(url)
-            else:
-                ydl.download([url])
+        with yt_dlp.YoutubeDL(get_ydl_opts()) as ydl:
+            info = ydl.extract_info(url, download=False)
+            
+            # Formats filter karna (Best quality aur alag alag resolutions)
+            formats_list = []
+            seen_qualities = set()
 
-        # --- SEND FILE ---
-        if mode in ['playlist_video', 'playlist_audio', 'batch', 'images']:
-            shutil.make_archive(os.path.join(BASE_DIR, 'files'), 'zip', DOWNLOAD_FOLDER)
-            return send_file(os.path.join(BASE_DIR, 'files.zip'), as_attachment=True)
-        else:
-            files = os.listdir(DOWNLOAD_FOLDER)
-            if files:
-                return send_file(os.path.join(DOWNLOAD_FOLDER, files[0]), as_attachment=True)
-            else:
-                return "Error: Download failed (No file found)"
+            # Reverse order taaki best quality pehle aaye
+            for f in reversed(info.get('formats', [])):
+                # Sirf MP4/Video formats uthao jo useful hon
+                if f.get('vcodec') != 'none' and f.get('url'):
+                    resolution = f.get('resolution', 'Unknown')
+                    filesize = f.get('filesize_approx') or f.get('filesize')
+                    
+                    # Duplicate quality hatana
+                    if resolution not in seen_qualities and resolution != 'audio only':
+                        # Size convert (Bytes to MB)
+                        size_mb = f"{round(filesize / 1024 / 1024, 2)} MB" if filesize else "N/A"
+                        
+                        formats_list.append({
+                            'format_id': f['format_id'],
+                            'quality': resolution,
+                            'ext': f['ext'],
+                            'size': size_mb,
+                            'url': f['url'], # Original Direct Link
+                            'type': 'video'
+                        })
+                        seen_qualities.add(resolution)
+            
+            # Audio Only option add karna
+            formats_list.append({
+                'quality': 'Audio Only (MP3/M4A)',
+                'ext': 'mp3',
+                'size': 'Auto',
+                'url': url, # Hum proxy ke through audio convert nahi kar rahe abhi, simple rakha hai
+                'type': 'audio',
+                'is_audio_mode': True 
+            })
+
+            return jsonify({
+                'status': 'success',
+                'title': info.get('title', 'Video'),
+                'thumbnail': info.get('thumbnail'),
+                'duration': info.get('duration_string'),
+                'formats': formats_list
+            })
 
     except Exception as e:
-        return f"Error: {str(e)}"
+        return jsonify({'status': 'error', 'message': f"Failed to fetch: {str(e)}"})
+
+@app.route('/proxy_download')
+def proxy_download():
+    """
+    Ye function 'Man in the Middle' banta hai.
+    User -> Server -> Instagram/FB
+    Isse IP restriction bypass hoti hai.
+    """
+    file_url = request.args.get('url')
+    filename = request.args.get('filename', 'video.mp4')
+    
+    if not file_url:
+        return "No URL provided", 400
+
+    # Headers for request
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
+
+    try:
+        # Stream=True zaroori hai taaki server ki RAM na bhare
+        req = requests.get(file_url, stream=True, headers=headers)
+        
+        return Response(
+            stream_with_context(req.iter_content(chunk_size=4096)),
+            headers={
+                "Content-Disposition": f"attachment; filename={filename}",
+                "Content-Type": req.headers.get('content-type', 'video/mp4')
+            }
+        )
+    except Exception as e:
+        return f"Proxy Error: {str(e)}"
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=10000)
+    app.run(host='0.0.0.0', port=10000, debug=True)
     
